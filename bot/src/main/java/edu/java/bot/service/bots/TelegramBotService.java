@@ -10,11 +10,11 @@ import com.pengrad.telegrambot.response.BaseResponse;
 import edu.java.bot.configuration.ApplicationConfig;
 import edu.java.bot.service.commands.Command;
 import edu.java.bot.service.processors.UserMessageProcessor;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

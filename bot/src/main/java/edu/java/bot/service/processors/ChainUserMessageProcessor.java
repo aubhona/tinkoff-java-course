@@ -2,10 +2,16 @@ package edu.java.bot.service.processors;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
-import edu.java.bot.service.commands.*;
-import org.springframework.stereotype.Component;
+import edu.java.bot.service.commands.Command;
+import edu.java.bot.service.commands.HelpCommand;
+import edu.java.bot.service.commands.ListCommand;
+import edu.java.bot.service.commands.StartCommand;
+import edu.java.bot.service.commands.TrackCommand;
+import edu.java.bot.service.commands.UnknownCommand;
+import edu.java.bot.service.commands.UntrackCommand;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ChainUserMessageProcessor implements UserMessageProcessor {

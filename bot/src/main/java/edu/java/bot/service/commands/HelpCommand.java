@@ -21,8 +21,10 @@ public class HelpCommand implements Command {
         if (!supports(update)) {
             return nextCommand.handle(update);
         }
-        String helpMessage = "Список команд:\n/start - Зарегистрировать пользователя\n/help - Показать эту помощь\n" +
-            "/track - Начать отслеживание ссылки\n/untrack - Прекратить отслеживание ссылки\n" +
+        String helpMessage = "Список команд:\n/start - Зарегистрировать пользователя\n/help - Показать эту помощь\n"
+            +
+            "/track - Начать отслеживание ссылки\n/untrack - Прекратить отслеживание ссылки\n"
+            +
             "/list - Показать список отслеживаемых ссылок";
         return new SendMessage(update.message().chat().id(), helpMessage);
     }

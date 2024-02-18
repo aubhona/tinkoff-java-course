@@ -7,14 +7,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-@SpringBootApplication
-@EnableConfigurationProperties(ApplicationConfig.class)
-public class BotApplication {
+@SpringBootApplication @EnableConfigurationProperties(ApplicationConfig.class) public class BotApplication {
     private final Bot telegramBotService;
-    @Autowired
-    public BotApplication(Bot telegramBotService) {
+
+    @Autowired public BotApplication(Bot telegramBotService) {
         this.telegramBotService = telegramBotService;
     }
+
     public static void main(String[] args) {
         SpringApplication.run(BotApplication.class, args);
     }
