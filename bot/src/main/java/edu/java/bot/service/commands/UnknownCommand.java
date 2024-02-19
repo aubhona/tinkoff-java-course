@@ -8,17 +8,17 @@ public class UnknownCommand implements Command {
 
     @Override
     public String command() {
-        return null;
+        return CommandConstants.UNKNOWN_COMMAND.getCommand();
     }
 
     @Override
     public String description() {
-        return null;
+        return CommandConstants.UNKNOWN_COMMAND.getDescription();
     }
 
     @Override
     public SendMessage handle(Update update) {
-        return new SendMessage(update.message().chat().id(), "Команда неизвестна.");
+        return new SendMessage(update.message().chat().id(), CommandConstants.UNKNOWN_COMMAND.getResponse());
     }
 
     @Override

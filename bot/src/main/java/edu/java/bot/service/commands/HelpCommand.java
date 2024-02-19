@@ -8,12 +8,12 @@ public class HelpCommand implements Command {
 
     @Override
     public String command() {
-        return "/help";
+        return CommandConstants.HELP_COMMAND.getCommand();
     }
 
     @Override
     public String description() {
-        return "Показать помощь по командам";
+        return CommandConstants.HELP_COMMAND.getDescription();
     }
 
     @Override
@@ -21,12 +21,9 @@ public class HelpCommand implements Command {
         if (!supports(update)) {
             return nextCommand.handle(update);
         }
-        String helpMessage = "Список команд:\n/start - Зарегистрировать пользователя\n/help - Показать эту помощь\n"
-            +
-            "/track - Начать отслеживание ссылки\n/untrack - Прекратить отслеживание ссылки\n"
-            +
-            "/list - Показать список отслеживаемых ссылок";
-        return new SendMessage(update.message().chat().id(), helpMessage);
+        nextCommand.handle(update);
+
+        return new SendMessage(update.message().chat().id(), CommandConstants.HELP_COMMAND.getResponse());
     }
 
     @Override

@@ -8,12 +8,12 @@ public class StartCommand implements Command {
 
     @Override
     public String command() {
-        return "/start";
+        return CommandConstants.START_COMMAND.getCommand();
     }
 
     @Override
     public String description() {
-        return "Зарегистрировать пользователя";
+        return CommandConstants.START_COMMAND.getDescription();
     }
 
     @Override
@@ -21,8 +21,9 @@ public class StartCommand implements Command {
         if (!supports(update)) {
             return nextCommand.handle(update);
         }
-        String welcomeMessage = "Добро пожаловать в бота!";
-        return new SendMessage(update.message().chat().id(), welcomeMessage);
+        nextCommand.handle(update);
+
+        return new SendMessage(update.message().chat().id(), CommandConstants.START_COMMAND.getResponse());
     }
 
     @Override

@@ -2,27 +2,50 @@ package edu.java.bot.service.commands;
 
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.service.parsers.LinkParser;
+import edu.java.bot.service.repository.LinkRepository;
+import lombok.RequiredArgsConstructor;
+import java.net.URI;
+import java.util.Map;
 
+@RequiredArgsConstructor
 public class UntrackCommand implements Command {
     private Command nextCommand;
+    private boolean isExpectLink = false;
+    private final static String INPUT_LINK_MESSAGE = "Введите ссылку.";
+    private final LinkRepository<URI> linkRepository;
 
     @Override
     public String command() {
-        return "/untrack";
+        return CommandConstants.UNTRACK_COMMAND.getCommand();
     }
 
     @Override
     public String description() {
-        return "Прекратить отслеживание ссылки";
+        return CommandConstants.UNTRACK_COMMAND.getDescription();
+    }
+
+    @Override
+    public boolean supports(Update update) {
+        return update.message().text().startsWith(command()) || isExpectLink;
     }
 
     @Override
     public SendMessage handle(Update update) {
-        if (!supports(update)) {
+        if (!supports(update) || (isExpectLink && update.message().text().startsWith("/"))) {
+            isExpectLink = false;
             return nextCommand.handle(update);
         }
-        String messageText = "Отслеживание ссылки прекращено. (Функционал в разработке)";
-        return new SendMessage(update.message().chat().id(), messageText);
+        if (!isExpectLink) {
+            isExpectLink = true;
+            return new SendMessage(update.message().chat().id(), INPUT_LINK_MESSAGE);
+        }
+        nextCommand.handle(update);
+        Map.Entry<Boolean, URI> booleanURIEntry = LinkParser.tryParse(update.message().text());
+        if (booleanURIEntry.getKey()) {
+            linkRepository.removeLink(update.message().from().id().toString(), booleanURIEntry.getValue());
+        }
+        return new SendMessage(update.message().chat().id(), CommandConstants.UNTRACK_COMMAND.getResponse());
     }
 
     @Override
