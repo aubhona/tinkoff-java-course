@@ -8,8 +8,8 @@ import lombok.Getter;
 @Getter @AllArgsConstructor
 public enum LinkConstants {
     SUPPORTED_LINKS(new ArrayList<>() {{
-        add("https://github.com");
-        add("https://stackoverflow.com");
+        add("github.com");
+        add("stackoverflow.com");
     }});
     private final List<String> supportedLinks;
 }

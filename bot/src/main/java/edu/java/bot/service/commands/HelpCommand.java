@@ -21,7 +21,9 @@ public class HelpCommand implements Command {
         if (!supports(update)) {
             return nextCommand.handle(update);
         }
-        nextCommand.handle(update);
+        if (nextCommand != null) {
+            nextCommand.handle(update);
+        }
 
         return new SendMessage(update.message().chat().id(), CommandConstants.HELP_COMMAND.getResponse());
     }

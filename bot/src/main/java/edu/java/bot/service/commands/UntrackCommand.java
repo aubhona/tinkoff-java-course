@@ -4,9 +4,9 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.service.parsers.LinkParser;
 import edu.java.bot.service.repository.LinkRepository;
-import lombok.RequiredArgsConstructor;
 import java.net.URI;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class UntrackCommand implements Command {

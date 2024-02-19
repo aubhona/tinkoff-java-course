@@ -1,30 +1,34 @@
-import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Chat;
+import com.pengrad.telegrambot.model.Message;
+import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
+import edu.java.bot.service.commands.CommandConstants;
 import edu.java.bot.service.commands.StartCommand;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 
-public class StartCommandTest {
+class StartCommandTest {
 
-    private StartCommand startCommand;
+    @Mock
     private Update mockedUpdate;
+    @Mock
     private Message mockedMessage;
+    @Mock
     private Chat mockedChat;
+
+    @InjectMocks
+    private StartCommand startCommand;
+
     private final Long chatId = 12345L;
 
     @BeforeEach
-    public void setUp() {
-        startCommand = new StartCommand();
-        mockedUpdate = mock(Update.class);
-        mockedMessage = mock(Message.class);
-        mockedChat = mock(Chat.class);
-
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
         when(mockedUpdate.message()).thenReturn(mockedMessage);
         when(mockedMessage.chat()).thenReturn(mockedChat);
         when(mockedChat.id()).thenReturn(chatId);
@@ -32,9 +36,9 @@ public class StartCommandTest {
     }
 
     @Test
-    public void testHandleCorrectly() {
+    void testHandleCorrectly() {
         SendMessage response = startCommand.handle(mockedUpdate);
-        assertEquals("Добро пожаловать в бота!", response.getParameters().get("text"));
-        assertEquals(chatId, response.getParameters().get("chat_id"));
+        assertEquals(CommandConstants.START_COMMAND.getResponse(), response.getParameters().get("text"));
+        assertEquals(chatId.toString(), response.getParameters().get("chat_id").toString());
     }
 }
