@@ -37,11 +37,8 @@ public class TrackCommand implements Command {
     public SendMessage handle(Update update) {
         if (!supports(update) || (isExpectLink && update.message().text().startsWith("/"))) {
             isExpectLink = false;
-            if (nextCommand == null) {
-                return null;
-            }
 
-            return nextCommand.handle(update);
+            return nextCommand != null ? nextCommand.handle(update) : null;
         }
         if (!isExpectLink) {
             isExpectLink = true;
