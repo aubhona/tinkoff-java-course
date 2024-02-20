@@ -5,6 +5,7 @@ import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.BaseRequest;
+import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SetMyCommands;
 import com.pengrad.telegrambot.response.BaseResponse;
 import edu.java.bot.configuration.ApplicationConfig;
@@ -12,6 +13,7 @@ import edu.java.bot.service.commands.Command;
 import edu.java.bot.service.processors.UserMessageProcessor;
 import java.util.ArrayList;
 import java.util.List;
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +30,7 @@ public class TelegramBotService implements Bot {
         this.config = config;
         this.bot = new TelegramBot(this.config.telegramToken());
         this.messageProcessor = messageProcessor;
-        this.bot.setUpdatesListener(this);
+        start();
         registerCommands();
     }
 
@@ -52,8 +54,11 @@ public class TelegramBotService implements Bot {
     @Override
     public int process(List<Update> updates) {
         for (Update update : updates) {
-            if (update.message() != null) {
-                execute(messageProcessor.process(update));
+            if (update != null && update.message() != null) {
+                SendMessage message = messageProcessor.process(update);
+                if (message != null) {
+                    execute(message);
+                }
             }
         }
 
@@ -65,6 +70,7 @@ public class TelegramBotService implements Bot {
         bot.setUpdatesListener(this);
     }
 
+    @PreDestroy
     @Override
     public void close() {
         bot.removeGetUpdatesListener();

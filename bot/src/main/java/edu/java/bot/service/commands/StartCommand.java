@@ -28,6 +28,7 @@ public class StartCommand implements Command {
         if (nextCommand != null) {
             nextCommand.handle(update);
         }
+
         return new SendMessage(update.message().chat().id(), CommandConstants.START_COMMAND.getResponse());
     }
 

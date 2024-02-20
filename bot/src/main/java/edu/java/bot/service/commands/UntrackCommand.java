@@ -34,13 +34,19 @@ public class UntrackCommand implements Command {
     public SendMessage handle(Update update) {
         if (!supports(update) || (isExpectLink && update.message().text().startsWith("/"))) {
             isExpectLink = false;
+            if (nextCommand == null) {
+                return null;
+            }
+
             return nextCommand.handle(update);
         }
         if (!isExpectLink) {
             isExpectLink = true;
             return new SendMessage(update.message().chat().id(), INPUT_LINK_MESSAGE);
         }
-        nextCommand.handle(update);
+        if (nextCommand != null) {
+            nextCommand.handle(update);
+        }
         Map.Entry<Boolean, URI> booleanURIEntry = LinkParser.tryParse(update.message().text());
         if (booleanURIEntry.getKey()) {
             linkRepository.removeLink(update.message().from().id().toString(), booleanURIEntry.getValue());

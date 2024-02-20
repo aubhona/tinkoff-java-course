@@ -27,9 +27,15 @@ public class ListCommand implements Command {
     @Override
     public SendMessage handle(Update update) {
         if (!supports(update)) {
+            if (nextCommand == null) {
+                return null;
+            }
+
             return nextCommand.handle(update);
         }
-        nextCommand.handle(update);
+        if (nextCommand != null) {
+            nextCommand.handle(update);
+        }
 
         List<URI> links = linkRepository.getTrackedLinks(update.message().from().id().toString());
 

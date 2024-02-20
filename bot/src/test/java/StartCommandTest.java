@@ -4,12 +4,12 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.service.commands.CommandConstants;
 import edu.java.bot.service.commands.StartCommand;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 class StartCommandTest {
@@ -38,7 +38,7 @@ class StartCommandTest {
     @Test
     void testHandleCorrectly() {
         SendMessage response = startCommand.handle(mockedUpdate);
-        assertEquals(CommandConstants.START_COMMAND.getResponse(), response.getParameters().get("text"));
-        assertEquals(chatId.toString(), response.getParameters().get("chat_id").toString());
+        Assertions.assertEquals(CommandConstants.START_COMMAND.getResponse(), response.getParameters().get("text"));
+        Assertions.assertEquals(chatId.toString(), response.getParameters().get("chat_id").toString());
     }
 }
