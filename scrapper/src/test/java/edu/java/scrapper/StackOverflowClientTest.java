@@ -9,59 +9,63 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
 import java.time.Instant;
 import java.time.ZoneOffset;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 public class StackOverflowClientTest {
-    WireMockServer wireMockServer;
-    StackOverflowClient stackOverflowClient;
+    private WireMockServer wireMockServer;
+    private StackOverflowClient stackOverflowClient;
+
+    private static final String CONTENT_TYPE = "Content-Type";
+    private static final String APPLICATION_JSON = "application/json";
+    private static final String QUESTION_ID_1 = "11227809";
+    private static final String QUESTION_ID_2 = "1";
+    private static final String QUESTION_ID_3 = "2";
+    private static final long LAST_ACTIVITY_DATE = 1706021923L;
+    private static final long CREATION_DATE = 1340805096L;
+    private static final long LAST_EDIT_DATE = 1701123268L;
+    private static final String RESPONSE_BODY_1 = """
+            {"items": [
+                {
+                    "last_activity_date": %d,
+                    "creation_date": %d,
+                    "last_edit_date": %d,
+                    "question_id": 11227809,
+                    "title": "Why is processing a sorted array faster than processing an unsorted array?"
+                }
+            ]}""";
+    private static final String RESPONSE_BODY_2 = """
+            {"items": [
+                {
+                    "last_activity_date": %d,
+                    "creation_date": %d,
+                    "question_id": 1,
+                    "title": "Why is processing a sorted array faster than processing an unsorted array?"
+                }
+            ]}""";
+    private static final String EMPTY_BODY = "";
 
     @BeforeEach
     void setUp() {
         wireMockServer = new WireMockServer();
         wireMockServer.start();
 
-        wireMockServer.stubFor(get(urlPathEqualTo("/2.3/questions/11227809"))
-            .withQueryParam("site", equalTo("stackoverflow"))
-            .willReturn(aResponse()
-                .withHeader("Content-Type", "application/json")
-                .withBody(
-                        """
-                                {"items": [
-                                {
-                                "last_activity_date": 1706021923,
-                                "creation_date": 1340805096,
-                                "last_edit_date": 1701123268,
-                                "question_id": 11227809,
-                                "title": "Why is processing a sorted array faster than processing an unsorted array?"
-                                }
-                                ]}""")));
-        wireMockServer.stubFor(get(urlPathEqualTo("/2.3/questions/1"))
-            .withQueryParam("site", equalTo("stackoverflow"))
-            .willReturn(aResponse()
-                .withHeader("Content-Type", "application/json")
-                .withBody(
-                    """
-                            {"items": [
-                            {
-                            "last_activity_date": 1706021923,
-                            "creation_date": 1340805096,
-                            "question_id": 1,
-                            "title": "Why is processing a sorted array faster than processing an unsorted array?"
-                            }
-                            ]}""")));
-
-        wireMockServer.stubFor(get(urlPathEqualTo("/2.3/questions/2"))
-            .withQueryParam("site", equalTo("stackoverflow"))
-            .willReturn(aResponse()
-                .withHeader("Content-Type", "application/json")
-                .withBody("")));
+        configureStub(QUESTION_ID_1, String.format(RESPONSE_BODY_1, LAST_ACTIVITY_DATE, CREATION_DATE, LAST_EDIT_DATE));
+        configureStub(QUESTION_ID_2, String.format(RESPONSE_BODY_2, LAST_ACTIVITY_DATE, CREATION_DATE));
+        configureStub(QUESTION_ID_3, EMPTY_BODY);
 
         stackOverflowClient = new StackOverflowClient(WebClient.builder(), wireMockServer.baseUrl());
+    }
+
+    private void configureStub(String questionId, String responseBody) {
+        wireMockServer.stubFor(get(urlPathEqualTo("/2.3/questions/" + questionId))
+            .withQueryParam("site", equalTo("stackoverflow"))
+            .willReturn(aResponse()
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+                .withBody(responseBody)));
     }
 
     @AfterEach
@@ -71,32 +75,31 @@ public class StackOverflowClientTest {
 
     @Test
     void fetchQuestionInfoTest() {
-        Mono<StackOverflowQuestionResponse> responseMono = stackOverflowClient.fetchQuestionInfo("11227809");
+        Mono<StackOverflowQuestionResponse> responseMono = stackOverflowClient.fetchQuestionInfo(QUESTION_ID_1);
         StackOverflowQuestionResponse response = responseMono.block();
         Assertions.assertNotNull(response);
-        Assertions.assertEquals("11227809", response.items().getFirst().questionId());
-        Assertions.assertEquals(Instant.ofEpochSecond(1706021923L).atOffset(ZoneOffset.UTC), response.items().getFirst().lastActivityDate());
-        Assertions.assertEquals(Instant.ofEpochSecond(1340805096L).atOffset(ZoneOffset.UTC), response.items().getFirst().creationDate());
-        Assertions.assertEquals(Instant.ofEpochSecond(1701123268L).atOffset(ZoneOffset.UTC), response.items().getFirst().lastEditDate());
-        Assertions.assertEquals("Why is processing a sorted array faster than processing an unsorted array?",
-            response.items().getFirst().title());
+        Assertions.assertEquals(QUESTION_ID_1, response.items().getFirst().questionId());
+        Assertions.assertEquals(Instant.ofEpochSecond(LAST_ACTIVITY_DATE).atOffset(ZoneOffset.UTC), response.items().getFirst().lastActivityDate());
+        Assertions.assertEquals(Instant.ofEpochSecond(CREATION_DATE).atOffset(ZoneOffset.UTC), response.items().getFirst().creationDate());
+        Assertions.assertEquals(Instant.ofEpochSecond(LAST_EDIT_DATE).atOffset(ZoneOffset.UTC), response.items().getFirst().lastEditDate());
+        Assertions.assertEquals("Why is processing a sorted array faster than processing an unsorted array?", response.items().getFirst().title());
     }
 
     @Test
     void fetchQuestionInfoWithNullTest() {
-        Mono<StackOverflowQuestionResponse> responseMono = stackOverflowClient.fetchQuestionInfo("1");
+        Mono<StackOverflowQuestionResponse> responseMono = stackOverflowClient.fetchQuestionInfo(QUESTION_ID_2);
         StackOverflowQuestionResponse response = responseMono.block();
         Assertions.assertNotNull(response);
-        Assertions.assertEquals("1", response.items().getFirst().questionId());
-        Assertions.assertEquals(Instant.ofEpochSecond(1706021923L).atOffset(ZoneOffset.UTC), response.items().getFirst().lastActivityDate());
-        Assertions.assertEquals(Instant.ofEpochSecond(1340805096L).atOffset(ZoneOffset.UTC), response.items().getFirst().creationDate());
+        Assertions.assertEquals(QUESTION_ID_2, response.items().getFirst().questionId());
+        Assertions.assertEquals(Instant.ofEpochSecond(LAST_ACTIVITY_DATE).atOffset(ZoneOffset.UTC), response.items().getFirst().lastActivityDate());
+        Assertions.assertEquals(Instant.ofEpochSecond(CREATION_DATE).atOffset(ZoneOffset.UTC), response.items().getFirst().creationDate());
         Assertions.assertNull(response.items().getFirst().lastEditDate());
-        Assertions.assertEquals("Why is processing a sorted array faster than processing an unsorted array?",
-            response.items().getFirst().title());
+        Assertions.assertEquals("Why is processing a sorted array faster than processing an unsorted array?", response.items().getFirst().title());
     }
+
     @Test
-    void fetchQuestionNulInfoTest() {
-        Mono<StackOverflowQuestionResponse> responseMono = stackOverflowClient.fetchQuestionInfo("2");
+    void fetchQuestionNullInfoTest() {
+        Mono<StackOverflowQuestionResponse> responseMono = stackOverflowClient.fetchQuestionInfo(QUESTION_ID_3);
         StackOverflowQuestionResponse response = responseMono.block();
         Assertions.assertNull(response);
     }
