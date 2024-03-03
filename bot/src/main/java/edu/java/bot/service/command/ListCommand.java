@@ -3,10 +3,9 @@ package edu.java.bot.service.command;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 import edu.java.bot.service.repository.LinkRepository;
+import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

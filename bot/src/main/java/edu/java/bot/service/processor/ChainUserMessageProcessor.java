@@ -11,11 +11,11 @@ import edu.java.bot.service.command.UnknownCommand;
 import edu.java.bot.service.command.UntrackCommand;
 import edu.java.bot.service.parser.LinkConstants;
 import edu.java.bot.service.parser.LinkParser;
+import edu.java.bot.service.repository.LinkRepository;
+import edu.java.bot.service.repository.MemoryLinkRepository;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import edu.java.bot.service.repository.LinkRepository;
-import edu.java.bot.service.repository.MemoryLinkRepository;
 import org.springframework.stereotype.Component;
 
 @Component
