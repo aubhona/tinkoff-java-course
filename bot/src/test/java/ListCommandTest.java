@@ -1,7 +1,6 @@
 import com.pengrad.telegrambot.model.User;
-import edu.java.bot.service.commands.CommandConstants;
-import edu.java.bot.service.commands.ListCommand;
-import edu.java.bot.service.repository.LinkRepository;
+import edu.java.bot.service.command.CommandConstants;
+import edu.java.bot.service.command.ListCommand;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -28,8 +27,8 @@ class ListCommandTest {
     private Message mockedMessage;
     @Mock
     private Chat mockedChat;
-    @Mock
-    private LinkRepository<URI> linkRepository;
+    //@Mock
+    //private LinkRepository<URI> linkRepository;
     @Mock
     private User mockedUser;
 
@@ -49,7 +48,6 @@ class ListCommandTest {
 
     @Test
     void testProcessListCommandEmptyList() {
-        when(linkRepository.getTrackedLinks(anyString())).thenReturn(Collections.emptyList());
 
         SendMessage response = listCommand.handle(mockedUpdate);
 
@@ -59,7 +57,6 @@ class ListCommandTest {
     @Test
     void testProcessListCommandWithLinks() {
         List<URI> links = List.of(URI.create("https://example.com"), URI.create("https://another-example.com"));
-        when(linkRepository.getTrackedLinks(anyString())).thenReturn(links);
 
         SendMessage response = listCommand.handle(mockedUpdate);
 
