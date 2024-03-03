@@ -2,8 +2,8 @@ package edu.java.bot.client;
 
 import dto.AddLinkRequest;
 import dto.ApiResponse;
-import dto.LinkUrlResponse;
-import dto.ListLinkUrlsResponse;
+import edu.java.bot.dto.LinkUrlResponse;
+import edu.java.bot.dto.ListLinkUrlsResponse;
 import dto.RemoveLinkRequest;
 import edu.java.bot.dto.ClientResponse;
 import org.springframework.http.HttpMethod;

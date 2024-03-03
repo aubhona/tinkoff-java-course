@@ -29,9 +29,10 @@ public class LinksController {
     private static final String CHAT_NOT_EXIST_MESSAGE = "The chat doesn't exist";
     private static final String LINK_ALREADY_TRACKED_MESSAGE = "The link is already being tracked or incorrect";
     private static final String LINK_NOT_TRACKED_MESSAGE = "The link is not being tracked or incorrect";
+    private static final String TG_CHAT_ID_HEADER = "Tg-Chat-Id";
 
     @GetMapping
-    public ResponseEntity<ListLinksResponse> getAllLinks(@RequestHeader("Tg-Chat-Id") Long tgChatId)
+    public ResponseEntity<ListLinksResponse> getAllLinks(@RequestHeader(TG_CHAT_ID_HEADER) Long tgChatId)
         throws ChatNotRegisteredException {
         if (!service.chatExist(tgChatId)) {
             throw new ChatNotRegisteredException(CHAT_NOT_EXIST_MESSAGE);
@@ -46,7 +47,7 @@ public class LinksController {
 
     @PostMapping
     public ResponseEntity<LinkResponse> addLink(
-        @RequestHeader("Tg-Chat-Id") Long tgChatId,
+        @RequestHeader(TG_CHAT_ID_HEADER) Long tgChatId,
         @RequestBody AddLinkRequest addLinkRequest
     ) throws ChatNotRegisteredException, LinkAlreadyTrackedException {
         if (!service.chatExist(tgChatId)) {
@@ -62,7 +63,7 @@ public class LinksController {
 
     @DeleteMapping
     public ResponseEntity<LinkResponse> removeLink(
-        @RequestHeader("Tg-Chat-Id") Long tgChatId,
+        @RequestHeader(TG_CHAT_ID_HEADER) Long tgChatId,
         @RequestBody RemoveLinkRequest removeLinkRequest
     ) throws LinkNotTrackedException, ChatNotRegisteredException {
         if (!service.chatExist(tgChatId)) {

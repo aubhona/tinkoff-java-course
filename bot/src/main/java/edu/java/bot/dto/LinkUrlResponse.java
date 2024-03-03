@@ -1,4 +1,4 @@
-package dto;
+package edu.java.bot.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

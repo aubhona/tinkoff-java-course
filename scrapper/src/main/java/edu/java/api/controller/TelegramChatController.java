@@ -18,13 +18,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class TelegramChatController {
     private final TelegramChatService service;
 
+    private static final String CHAT_REGISTERED_SUCCESS_MESSAGE = "The chat has been successfully registered";
+    private static final String CHAT_ALREADY_EXISTS_ERROR_MESSAGE = "The chat already exists";
+    private static final String CHAT_REMOVED_SUCCESS_MESSAGE = "The chat has been successfully removed";
+    private static final String CHAT_DOES_NOT_EXIST_ERROR_MESSAGE = "The chat doesn't exist";
+
     @PostMapping("/{id}")
     public ResponseEntity<ApiResponse> registerChat(@PathVariable Long id) throws ChatAlreadyRegisteredException {
         if (!service.addChat(id)) {
-            throw new ChatAlreadyRegisteredException("The chat already exists");
+            throw new ChatAlreadyRegisteredException(CHAT_ALREADY_EXISTS_ERROR_MESSAGE);
         }
         ApiResponse response = new ApiResponse();
-        response.setDescription("The chat has been successfully registered");
+        response.setDescription(CHAT_REGISTERED_SUCCESS_MESSAGE);
 
         return ResponseEntity.ok(response);
     }
@@ -32,10 +37,10 @@ public class TelegramChatController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteChat(@PathVariable Long id) throws ChatNotRegisteredException {
         if (!service.removeChat(id)) {
-            throw new ChatNotRegisteredException("The chat doesn't exist");
+            throw new ChatNotRegisteredException(CHAT_DOES_NOT_EXIST_ERROR_MESSAGE);
         }
         ApiResponse response = new ApiResponse();
-        response.setDescription("The chat has been successfully removed");
+        response.setDescription(CHAT_REMOVED_SUCCESS_MESSAGE);
 
         return ResponseEntity.ok(response);
     }

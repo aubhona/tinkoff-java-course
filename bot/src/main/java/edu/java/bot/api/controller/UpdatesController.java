@@ -21,6 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class UpdatesController {
 
     private final UpdatesService service;
+    private static final String CHATS_NOT_EXIST_MESSAGE_TEMPLATE = "These chats don't exist: %s";
+    private static final String SUCCESSFULLY_PROCESSED_MESSAGE = "Successfully processed";
+    private static final String OK_STATUS_CODE = HttpStatus.OK.toString();
 
     @PostMapping
     public ResponseEntity<ApiResponse> sendUpdate(
@@ -33,12 +36,12 @@ public class UpdatesController {
         ApiResponse response = new ApiResponse();
         if (!nonExistentChats.isEmpty()) {
             throw new ChatNotFoundException(
-                "These chats don't exist: "
-                    + String.join(", ", nonExistentChats.stream().map(Object::toString).toList())
+                String.format(CHATS_NOT_EXIST_MESSAGE_TEMPLATE,
+                    String.join(", ", nonExistentChats.stream().map(Object::toString).toList()))
             );
         }
-        response.setDescription("Successfully processed");
-        response.setCode(HttpStatus.OK.toString());
+        response.setDescription(SUCCESSFULLY_PROCESSED_MESSAGE);
+        response.setCode(OK_STATUS_CODE);
 
         return ResponseEntity.ok().body(response);
     }

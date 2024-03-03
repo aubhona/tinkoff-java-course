@@ -3,37 +3,33 @@ package edu.java.bot.api.service;
 import com.pengrad.telegrambot.request.SendMessage;
 import dto.LinkUpdateRequest;
 import edu.java.bot.service.bot.TelegramBotService;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-// Temporary stub.
 @Service
 @RequiredArgsConstructor
 public class UpdatesService {
 
     private final TelegramBotService bot;
+    private static final String UPDATE_MESSAGE_TEMPLATE = "У вас появилось обновление по ссылке:\n%s\nОписание: %s";
 
     public List<Long> sendUpdateToChats(LinkUpdateRequest request) {
-        List<Long> nonExistentChats = new ArrayList<>();
-        for (Long chatId : request.getTgChatIds()) {
-            if (!bot.checkChatExists(chatId)) {
-                nonExistentChats.add(chatId);
-                continue;
-            }
-            SendMessage message = new SendMessage(
-                chatId,
-                String.format(
-                    "У вас появилось обновление по ссылке:\n%s\n%s",
-                    request.getDescription(),
-                    request.getDescription()
-                )
-            );
+        return request.getTgChatIds().stream()
+            .filter(chatId -> {
+                boolean chatExists = bot.checkChatExists(chatId);
+                if (chatExists) {
+                    sendUpdateMessage(chatId, request);
+                }
+                return !chatExists;
+            })
+            .collect(Collectors.toList());
+    }
 
-            bot.execute(message);
-        }
-
-        return nonExistentChats;
+    private void sendUpdateMessage(Long chatId, LinkUpdateRequest request) {
+        String messageText = String.format(UPDATE_MESSAGE_TEMPLATE, request.getUrl(), request.getDescription());
+        SendMessage message = new SendMessage(chatId, messageText);
+        bot.execute(message);
     }
 }

@@ -13,10 +13,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final String ERROR_MESSAGE = "An error has occurred";
 
     private ApiResponse getExceptionResponse(Exception exception, HttpStatus httpStatus) {
         ApiResponse response = new ApiResponse();
-        response.setDescription("An error has occurred");
+        response.setDescription(ERROR_MESSAGE);
         response.setExceptionMessage(exception.getMessage());
         response.setCode(httpStatus.toString());
         response.setStacktrace(Arrays.stream(exception.getStackTrace()).map(StackTraceElement::toString).toList());
