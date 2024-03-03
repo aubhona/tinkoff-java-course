@@ -1,0 +1,18 @@
+app:
+  telegram-token: ${BOT_TOKEN}
+
+spring:
+  application:
+    name: bot
+  jackson:
+    time-zone: UTC
+
+server:
+  port: 8080
+
+logging:
+  config: classpath:log4j2-plain.xml
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
