@@ -1,8 +1,11 @@
 package edu.java.bot.client;
 
 import dto.AddLinkRequest;
+import dto.ApiResponse;
 import dto.LinkResponse;
-import dto.ListLinksResponse;
+import dto.LinkUrlResponse;
+import dto.ListLinkUrlsResponse;
+import edu.java.bot.dto.ClientResponse;
 import dto.RemoveLinkRequest;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -21,32 +24,40 @@ public class ScrapperClient {
         this.webClient = webClientBuilder.baseUrl(BASE_URL).build();
     }
 
-    public Mono<ListLinksResponse> getAllLinks(Long tgChatId) {
+    public Mono<ListLinkUrlsResponse> getAllLinks(Long tgChatId) {
         return webClient.get()
             .uri("/links")
             .header("Tg-Chat-Id", tgChatId.toString())
             .retrieve()
-            .bodyToMono(ListLinksResponse.class);
+            .bodyToMono(ListLinkUrlsResponse.class);
     }
 
-    public Mono<LinkResponse> addLink(Long tgChatId, AddLinkRequest addLinkRequest) {
+    public Mono<LinkUrlResponse> addLink(Long tgChatId, AddLinkRequest addLinkRequest) {
         return webClient.post()
             .uri("/links")
             .header("Tg-Chat-Id", tgChatId.toString())
             .bodyValue(addLinkRequest)
             .retrieve()
-            .bodyToMono(LinkResponse.class);
+            .bodyToMono(LinkUrlResponse.class);
     }
 
-    public Mono<LinkResponse> removeLink(Long tgChatId, RemoveLinkRequest removeLinkRequest) {
+    public Mono<ClientResponse> removeLink(Long tgChatId, RemoveLinkRequest removeLinkRequest) {
         return webClient
             .method(HttpMethod.DELETE)
             .uri("/links")
             .header("Tg-Chat-Id", tgChatId.toString())
             .body(BodyInserters.fromValue(removeLinkRequest))
-            .retrieve()
-            .bodyToMono(LinkResponse.class);
+            .exchangeToMono(response -> {
+                if (response.statusCode().is2xxSuccessful()) {
+                    return response.bodyToMono(LinkResponse.class)
+                        .map(body -> new ClientResponse(true, "Link removed successfully", body));
+                } else {
+                    return response.bodyToMono(ApiResponse.class)
+                        .map(errorBody -> new ClientResponse(false, "Error occurred", errorBody));
+                }
+            });
     }
+
 
     public Mono<String> registerChat(Long id) {
         return webClient.post()
