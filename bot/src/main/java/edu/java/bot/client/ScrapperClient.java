@@ -2,10 +2,10 @@ package edu.java.bot.client;
 
 import dto.AddLinkRequest;
 import dto.ApiResponse;
-import edu.java.bot.dto.LinkUrlResponse;
-import edu.java.bot.dto.ListLinkUrlsResponse;
 import dto.RemoveLinkRequest;
 import edu.java.bot.dto.ClientResponse;
+import edu.java.bot.dto.LinkUrlResponse;
+import edu.java.bot.dto.ListLinkUrlsResponse;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
