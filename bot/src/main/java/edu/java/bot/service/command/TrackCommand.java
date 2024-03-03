@@ -5,6 +5,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.service.parser.LinkParser;
 import java.net.URI;
 import java.util.Map;
+import edu.java.bot.service.repository.LinkRepository;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -15,7 +16,7 @@ public class TrackCommand implements Command {
     private Command nextCommand;
     private boolean isExpectLink = false;
     private final LinkParser linkParser;
-    //private final LinkRepository<URI> linkRepository;
+    private final LinkRepository<URI> linkRepository;
 
     @Override
     public String command() {
@@ -55,7 +56,7 @@ public class TrackCommand implements Command {
                 : UNSUPPORTED_LINK_MESSAGE);
         }
 
-        //linkRepository.addLink(update.message().from().id().toString(), booleanURIEntry.getValue());
+        linkRepository.addLink(update.message().from().id().toString(), booleanURIEntry.getValue());
 
         return new SendMessage(update.message().chat().id(), CommandConstants.TRACK_COMMAND.getResponse());
     }

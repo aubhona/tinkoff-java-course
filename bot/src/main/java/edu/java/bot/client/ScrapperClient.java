@@ -24,21 +24,36 @@ public class ScrapperClient {
         this.webClient = webClientBuilder.baseUrl(BASE_URL).build();
     }
 
-    public Mono<ListLinkUrlsResponse> getAllLinks(Long tgChatId) {
+    public Mono<ClientResponse> getAllLinks(Long tgChatId) {
         return webClient.get()
             .uri("/links")
             .header("Tg-Chat-Id", tgChatId.toString())
-            .retrieve()
-            .bodyToMono(ListLinkUrlsResponse.class);
+            .exchangeToMono(response -> {
+                    if (response.statusCode().is2xxSuccessful()) {
+                        return response.bodyToMono(ListLinkUrlsResponse.class)
+                            .map(body -> new ClientResponse(true, "Link removed successfully", body));
+                    } else {
+                        return response.bodyToMono(ApiResponse.class)
+                            .map(errorBody -> new ClientResponse(false, "Error occurred", errorBody));
+                    }
+                }
+            );
     }
 
-    public Mono<LinkUrlResponse> addLink(Long tgChatId, AddLinkRequest addLinkRequest) {
+    public Mono<ClientResponse> addLink(Long tgChatId, AddLinkRequest addLinkRequest) {
         return webClient.post()
             .uri("/links")
             .header("Tg-Chat-Id", tgChatId.toString())
             .bodyValue(addLinkRequest)
-            .retrieve()
-            .bodyToMono(LinkUrlResponse.class);
+            .exchangeToMono(response -> {
+                if (response.statusCode().is2xxSuccessful()) {
+                    return response.bodyToMono(LinkUrlResponse.class)
+                        .map(body -> new ClientResponse(true, "Link removed successfully", body));
+                } else {
+                    return response.bodyToMono(ApiResponse.class)
+                        .map(errorBody -> new ClientResponse(false, "Error occurred", errorBody));
+                }
+            });
     }
 
     public Mono<ClientResponse> removeLink(Long tgChatId, RemoveLinkRequest removeLinkRequest) {
@@ -49,7 +64,7 @@ public class ScrapperClient {
             .body(BodyInserters.fromValue(removeLinkRequest))
             .exchangeToMono(response -> {
                 if (response.statusCode().is2xxSuccessful()) {
-                    return response.bodyToMono(LinkResponse.class)
+                    return response.bodyToMono(LinkUrlResponse.class)
                         .map(body -> new ClientResponse(true, "Link removed successfully", body));
                 } else {
                     return response.bodyToMono(ApiResponse.class)
@@ -58,18 +73,17 @@ public class ScrapperClient {
             });
     }
 
-
-    public Mono<String> registerChat(Long id) {
+    public Mono<ApiResponse> registerChat(Long id) {
         return webClient.post()
             .uri("/tg-chat/{id}", id)
             .retrieve()
-            .bodyToMono(String.class);
+            .bodyToMono(ApiResponse.class);
     }
 
-    public Mono<String> deleteChat(Long id) {
+    public Mono<ApiResponse> deleteChat(Long id) {
         return webClient.delete()
             .uri("/tg-chat/{id}", id)
             .retrieve()
-            .bodyToMono(String.class);
+            .bodyToMono(ApiResponse.class);
     }
 }

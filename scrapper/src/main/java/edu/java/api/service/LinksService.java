@@ -33,7 +33,7 @@ public class LinksService {
 
     public boolean removeChatLink(Long chatId, String link) {
         try {
-            if (linkRepository.isLinkTracked(chatId, URI.create(link))) {
+            if (!linkRepository.isLinkTracked(chatId, URI.create(link))) {
                 return false;
             }
             linkRepository.removeLink(chatId, URI.create(link));

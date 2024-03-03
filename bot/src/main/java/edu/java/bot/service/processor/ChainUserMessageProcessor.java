@@ -11,8 +11,11 @@ import edu.java.bot.service.command.UnknownCommand;
 import edu.java.bot.service.command.UntrackCommand;
 import edu.java.bot.service.parser.LinkConstants;
 import edu.java.bot.service.parser.LinkParser;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import edu.java.bot.service.repository.LinkRepository;
+import edu.java.bot.service.repository.MemoryLinkRepository;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,9 +25,12 @@ public class ChainUserMessageProcessor implements UserMessageProcessor {
     public ChainUserMessageProcessor() {
         Command startCommand = new StartCommand();
         Command helpCommand = new HelpCommand();
-        Command trackCommand = new TrackCommand(new LinkParser(LinkConstants.SUPPORTED_LINKS.getSupportedLinks()));
-        Command untrackCommand = new UntrackCommand();
-        Command listCommand = new ListCommand();
+        // Temporary stub.
+        LinkRepository<URI> repository = new MemoryLinkRepository();
+        Command trackCommand = new TrackCommand(new LinkParser(LinkConstants.SUPPORTED_LINKS.getSupportedLinks()),
+            repository);
+        Command untrackCommand = new UntrackCommand(repository);
+        Command listCommand = new ListCommand(repository);
         Command unknownCommand = new UnknownCommand();
         startCommand.setNext(helpCommand);
         helpCommand.setNext(trackCommand);

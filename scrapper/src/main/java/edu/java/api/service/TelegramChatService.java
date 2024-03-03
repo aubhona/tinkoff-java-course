@@ -20,7 +20,7 @@ public class TelegramChatService {
     }
 
     public boolean removeChat(Long chatId) {
-        if (chatRepository.isChatExists(chatId)) {
+        if (!chatRepository.isChatExists(chatId)) {
             return false;
         }
 

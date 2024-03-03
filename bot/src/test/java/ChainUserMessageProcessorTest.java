@@ -6,6 +6,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.service.command.CommandConstants;
 import edu.java.bot.service.parser.LinkParser;
 import edu.java.bot.service.processor.ChainUserMessageProcessor;
+import edu.java.bot.service.repository.LinkRepository;
 import java.net.URI;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -29,8 +30,8 @@ class ChainUserMessageProcessorTest {
     private Message mockedMessage;
     @Mock
     private Chat mockedChat;
-//    @Mock
-//    private LinkRepository<URI> linkRepository;
+    @Mock
+    private LinkRepository<URI> linkRepository;
     @Mock
     private User mockedUser;
     private MockedStatic<LinkParser> mockedLinkParser;
@@ -91,7 +92,7 @@ class ChainUserMessageProcessorTest {
     @Test
     void testProcessListCommandEmptyList() {
         when(mockedMessage.text()).thenReturn(CommandConstants.LIST_COMMAND.getCommand());
-        //when(linkRepository.getTrackedLinks(anyString())).thenReturn(new ArrayList<>());
+        when(linkRepository.getTrackedLinks(anyString())).thenReturn(new ArrayList<>());
 
         SendMessage response = processor.process(mockedUpdate);
         Assertions.assertTrue(response.getParameters().get("text").toString().contains(CommandConstants.LIST_COMMAND.getResponse()));

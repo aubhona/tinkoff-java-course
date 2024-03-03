@@ -6,13 +6,14 @@ import com.pengrad.telegrambot.request.SendMessage;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import edu.java.bot.service.repository.LinkRepository;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class ListCommand implements Command {
     private Command nextCommand;
-    //private final ScrapperClient client;
     private final static String LINK_HEADER_MESSAGE = "Список отслеживаемых ссылок:\n";
+    private final LinkRepository<URI> linkRepository;
 
     @Override
     public String command() {
@@ -36,8 +37,8 @@ public class ListCommand implements Command {
         if (nextCommand != null) {
             nextCommand.handle(update);
         }
-        //TODO:
-        List<URI> links = new ArrayList<>();
+
+        List<URI> links = linkRepository.getTrackedLinks(update.message().from().id().toString());
 
         if (links.isEmpty()) {
             return new SendMessage(update.message().chat().id(), CommandConstants.LIST_COMMAND.getResponse());

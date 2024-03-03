@@ -5,6 +5,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.service.parser.LinkParser;
 import java.net.URI;
 import java.util.Map;
+import edu.java.bot.service.repository.LinkRepository;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -12,7 +13,7 @@ public class UntrackCommand implements Command {
     private Command nextCommand;
     private boolean isExpectLink = false;
     private final static String INPUT_LINK_MESSAGE = "Введите ссылку.";
-    //private final LinkRepository<URI> linkRepository;
+    private final LinkRepository<URI> linkRepository;
 
     @Override
     public String command() {
@@ -48,8 +49,9 @@ public class UntrackCommand implements Command {
         }
         Map.Entry<Boolean, URI> booleanURIEntry = LinkParser.tryParse(update.message().text());
         if (booleanURIEntry.getKey()) {
-           // linkRepository.removeLink(update.message().from().id().toString(), booleanURIEntry.getValue());
+            linkRepository.removeLink(update.message().from().id().toString(), booleanURIEntry.getValue());
         }
+
         return new SendMessage(update.message().chat().id(), CommandConstants.UNTRACK_COMMAND.getResponse());
     }
 

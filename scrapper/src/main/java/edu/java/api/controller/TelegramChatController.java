@@ -1,5 +1,6 @@
 package edu.java.api.controller;
 
+import dto.ApiResponse;
 import edu.java.api.exception.ChatAlreadyRegisteredException;
 import edu.java.api.exception.ChatNotRegisteredException;
 import edu.java.api.service.TelegramChatService;
@@ -18,20 +19,24 @@ public class TelegramChatController {
     private final TelegramChatService service;
 
     @PostMapping("/{id}")
-    public ResponseEntity<?> registerChat(@PathVariable Long id) throws ChatAlreadyRegisteredException {
+    public ResponseEntity<ApiResponse> registerChat(@PathVariable Long id) throws ChatAlreadyRegisteredException {
         if (!service.addChat(id)) {
             throw new ChatAlreadyRegisteredException("The chat already exists");
         }
+        ApiResponse response = new ApiResponse();
+        response.setDescription("The chat has been successfully registered");
 
-        return ResponseEntity.ok("The chat has been successfully registered");
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteChat(@PathVariable Long id) throws ChatNotRegisteredException {
+    public ResponseEntity<ApiResponse> deleteChat(@PathVariable Long id) throws ChatNotRegisteredException {
         if (!service.removeChat(id)) {
             throw new ChatNotRegisteredException("The chat doesn't exist");
         }
+        ApiResponse response = new ApiResponse();
+        response.setDescription("The chat has been successfully removed");
 
-        return ResponseEntity.ok("The chat has been successfully removed");
+        return ResponseEntity.ok(response);
     }
 }
