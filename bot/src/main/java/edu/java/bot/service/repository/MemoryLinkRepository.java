@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+// Temporary stub.
 public class MemoryLinkRepository implements LinkRepository<URI> {
     private final HashMap<String, HashSet<URI>> links = new HashMap<>();
 

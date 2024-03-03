@@ -1,6 +1,6 @@
 import com.pengrad.telegrambot.model.User;
-import edu.java.bot.service.commands.CommandConstants;
-import edu.java.bot.service.commands.ListCommand;
+import edu.java.bot.service.command.CommandConstants;
+import edu.java.bot.service.command.ListCommand;
 import edu.java.bot.service.repository.LinkRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
